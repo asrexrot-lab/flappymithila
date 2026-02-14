@@ -5,30 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ASR Pro | Jihad & Mithila</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script async="async" data-cfasync="false" src="https://pl28667195.effectivegatecpm.com/e88ff582162dd6b3675cc41a61f6a422/invoke.js"></script>
     <style>
         body { margin: 0; overflow: hidden; background: #ffafbd; touch-action: none; font-family: 'Arial', sans-serif; }
         #gameCanvas { display: block; transition: background 2s ease; }
         .ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 100; }
-        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border-radius: 30px; padding: 25px; text-align: center; border: 3px solid #ff416c; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 90%; max-width: 350px; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 30px; padding: 25px; text-align: center; border: 3px solid #ff416c; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .btn { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; padding: 12px 35px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; margin-top: 15px; font-size: 1.2rem; }
         .stats { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; pointer-events: none; z-index: 150; }
-        .stat-box { background: rgba(0, 0, 0, 0.5); color: #fff; padding: 8px 15px; border-radius: 20px; font-weight: bold; border: 1px solid #ff416c; font-size: 14px; }
-        .asr-footer { position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-weight: 900; opacity: 0.4; font-size: 18px; letter-spacing: 5px; pointer-events: none; }
-        
-        /* Ad Container Styling */
-        #ad-container { position: absolute; bottom: 50px; width: 100%; display: flex; justify-content: center; z-index: 10; }
+        .stat-box { background: rgba(0, 0, 0, 0.5); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; border: 1px solid #ff416c; }
+        .asr-footer { position: absolute; bottom: 15px; width: 100%; text-align: center; color: white; font-weight: 900; opacity: 0.6; font-size: 22px; letter-spacing: 5px; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <canvas id="gameCanvas"></canvas>
     
-    <div id="ad-container">
-        <div id="container-e88ff582162dd6b3675cc41a61f6a422"></div>
-    </div>
-
     <div class="asr-footer">ASR</div>
 
     <div class="stats" id="statsUI" style="display: none;">
@@ -38,7 +29,7 @@
 
     <div class="ui-layer">
         <div id="startScreen" class="glass">
-            <img src="https://media.giphy.com/media/KztT2c4u8mYYUiMKdJ/giphy.gif" class="w-24 mx-auto mb-4 rounded-xl shadow-md">
+            <img src="https://media.giphy.com/media/KztT2c4u8mYYUiMKdJ/giphy.gif" class="w-32 mx-auto mb-4 rounded-xl">
             <h1 class="text-2xl font-bold text-pink-600">Fly for Jihad ❤️</h1>
             <p class="text-sm text-gray-500 mb-2">Collect 'J' coins, Mithila!</p>
             <button class="btn" onclick="startGame()">Start Game</button>
@@ -46,7 +37,7 @@
 
         <div id="gameOverScreen" class="glass hidden">
             <h1 class="text-5xl font-black text-red-500 mb-2 animate-bounce">Gadhu 😜</h1>
-            <div class="my-4 text-xl font-bold text-pink-600">J-Coins: <span id="finalCoins">0</span></div>
+            <div class="my-4 text-xl font-bold text-pink-600">You collected <span id="finalCoins">0</span> J-Coins</div>
             <button class="btn" onclick="startGame()">Try Again</button>
         </div>
     </div>
@@ -57,18 +48,18 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let heart, obstacles, coins, rain, frameCount, gameRunning, currentScore, highScore;
+        let heart, obstacles, coins, particles, frameCount, gameRunning, currentScore, highScore;
         let gameSpeed = 3.5;
-        let themeHue = 340; 
+        let themeHue = 340; // Pink Start
 
         highScore = localStorage.getItem('asr_pro_score') || 0;
         document.getElementById('highScoreText').innerText = highScore;
 
         function init() {
-            heart = { x: 70, y: canvas.height/2, size: 22, velocity: 0 };
+            heart = { x: 80, y: canvas.height/2, size: 24, velocity: 0 };
             obstacles = [];
             coins = [];
-            rain = [];
+            particles = [];
             currentScore = 0;
             frameCount = 0;
             gameRunning = false;
@@ -87,11 +78,12 @@
         function drawHeart(x, y, size) {
             ctx.save();
             ctx.translate(x, y);
-            let wing = Math.sin(frameCount * 0.25) * 12;
-            ctx.fillStyle = "rgba(255,255,255,0.7)";
-            ctx.beginPath(); ctx.ellipse(-size, wing/2, size, size/2, -0.4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.ellipse(size, wing/2, size, size/2, 0.4, 0, Math.PI*2); ctx.fill();
-            
+            // Wings
+            let wingflap = Math.sin(frameCount * 0.2) * 15;
+            ctx.fillStyle = "rgba(255,255,255,0.8)";
+            ctx.beginPath(); ctx.ellipse(-size, wingflap/2, size, size/2, -0.4, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(size, wingflap/2, size, size/2, 0.4, 0, Math.PI*2); ctx.fill();
+            // Heart
             ctx.fillStyle = "#ff0044";
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -101,71 +93,84 @@
             ctx.restore();
         }
 
-        function drawRose(x, y, w, h, isTop) {
-            // Thorn Vine
-            ctx.fillStyle = "#0a2e15";
-            ctx.fillRect(x + w/2 - 4, y, 8, h);
-            for(let i=0; i<h; i+=35){
-                ctx.fillStyle = "#051a0b";
+        function drawRoseObstacle(x, y, w, h, isTop) {
+            // Vine with Thorns (কাঁটা)
+            ctx.fillStyle = "#1a472a";
+            ctx.fillRect(x + w/2 - 5, y, 10, h);
+            
+            for(let j = 0; j < h; j += 40) {
                 ctx.beginPath();
-                ctx.moveTo(x+w/2, y+i);
-                ctx.lineTo(x+w/2+(i%70===0?12:-12), y+i+5);
-                ctx.lineTo(x+w/2, y+i+10);
+                ctx.fillStyle = "#0d2616";
+                ctx.moveTo(x + w/2, y + j);
+                ctx.lineTo(x + w/2 + (j%80===0?15:-15), y + j + 5);
+                ctx.lineTo(x + w/2, y + j + 10);
                 ctx.fill();
             }
-            // Professional Rose Head
-            let rx = x + w/2, ry = isTop ? h-5 : y+5;
-            ctx.fillStyle = "#990000";
-            for(let a=0; a<Math.PI*2; a+=Math.PI/3){
-                ctx.beginPath(); ctx.arc(rx+Math.cos(a)*8, ry+Math.sin(a)*8, 10, 0, Math.PI*2); ctx.fill();
+
+            // Professional Rose (Drawing petals)
+            let roseY = isTop ? h - 10 : y + 10;
+            let centerX = x + w/2;
+            ctx.fillStyle = "#b00020";
+            for(let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.ellipse(centerX + Math.cos(i)*10, roseY + Math.sin(i)*10, 12, 12, 0, 0, Math.PI*2);
+                ctx.fill();
             }
             ctx.fillStyle = "#ff1744";
-            ctx.beginPath(); ctx.arc(rx, ry, 7, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(centerX, roseY, 8, 0, Math.PI*2); ctx.fill();
         }
 
         function animate() {
             if(!gameRunning) return;
-            themeHue = (themeHue + 0.15) % 360;
-            ctx.fillStyle = `hsl(${themeHue}, 60%, 80%)`;
+            
+            // Dynamic Background Color
+            themeHue = (themeHue + 0.1) % 360;
+            ctx.fillStyle = `hsl(${themeHue}, 70%, 85%)`;
             ctx.fillRect(0,0, canvas.width, canvas.height);
 
-            // "Rain" particles
-            if(frameCount % 6 === 0) rain.push({x: Math.random()*canvas.width, y: -20, l: Math.random()*8+4});
-            ctx.strokeStyle = "rgba(0,0,0,0.1)";
-            rain.forEach((p, i) => {
-                p.y += 6;
-                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y+p.l); ctx.stroke();
-                if(p.y > canvas.height) rain.splice(i, 1);
+            // Rain of small logs/particles
+            if(frameCount % 5 === 0) particles.push({ x: Math.random()*canvas.width, y: -10, s: Math.random()*3+1 });
+            ctx.fillStyle = "rgba(0,0,0,0.1)";
+            particles.forEach((p, i) => {
+                p.y += 5;
+                ctx.fillRect(p.x, p.y, 2, 10);
+                if(p.y > canvas.height) particles.splice(i, 1);
             });
 
-            heart.velocity += 0.3;
+            // Physics & Heart
+            heart.velocity += 0.28;
             heart.y += heart.velocity;
             drawHeart(heart.x, heart.y, heart.size);
 
-            gameSpeed = 3.5 + (currentScore * 0.08);
+            // Speed up
+            gameSpeed = 3.5 + (currentScore * 0.1);
 
-            if(frameCount % 95 === 0) {
-                let gap = 160;
-                let h = Math.random() * (canvas.height - gap - 250) + 100;
-                obstacles.push({x: canvas.width, h: h, gap: gap});
-                coins.push({x: canvas.width + 120, y: h + gap/2, collected: false});
+            if(frameCount % 90 === 0) {
+                const gap = 160;
+                const h = Math.random() * (canvas.height - gap - 200) + 100;
+                obstacles.push({ x: canvas.width, h: h, gap: gap });
+                coins.push({ x: canvas.width + 120, y: h + gap/2, collected: false });
             }
 
             obstacles.forEach((ob, i) => {
                 ob.x -= gameSpeed;
-                drawRose(ob.x, 0, 50, ob.h, true);
-                drawRose(ob.x, ob.h + ob.gap, 50, canvas.height, false);
-                if(heart.x+15 > ob.x && heart.x-15 < ob.x+50 && (heart.y < ob.h || heart.y+15 > ob.h+ob.gap)) endGame();
+                drawRoseObstacle(ob.x, 0, 50, ob.h, true);
+                drawRoseObstacle(ob.x, ob.h + ob.gap, 50, canvas.height, false);
+
+                if(heart.x + 15 > ob.x && heart.x - 15 < ob.x + 50 && (heart.y < ob.h || heart.y + 15 > ob.h + ob.gap)) endGame();
                 if(ob.x < -100) obstacles.splice(i, 1);
             });
 
             coins.forEach((c, i) => {
                 c.x -= gameSpeed;
-                if(!c.collected){
-                    ctx.fillStyle = "#FFD700"; ctx.font = "bold 28px Arial";
-                    ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 5;
-                    ctx.fillText("J", c.x, c.y+10); ctx.shadowBlur = 0;
-                    if(Math.hypot(heart.x-c.x, heart.y-c.y) < 35){
+                if(!c.collected) {
+                    ctx.fillStyle = "#FFD700";
+                    ctx.font = "bold 25px Arial";
+                    ctx.shadowColor = "gold"; ctx.shadowBlur = 10;
+                    ctx.fillText("J", c.x, c.y);
+                    ctx.shadowBlur = 0;
+                    
+                    if(Math.hypot(heart.x - c.x, heart.y - c.y) < 35) {
                         c.collected = true; currentScore++;
                         document.getElementById('coinCount').innerText = currentScore;
                     }
@@ -189,7 +194,7 @@
             document.getElementById('gameOverScreen').classList.remove('hidden');
         }
 
-        const jump = () => { if(gameRunning) heart.velocity = -5.8; };
+        const jump = () => { if(gameRunning) heart.velocity = -5.5; };
         window.addEventListener('touchstart', (e) => { jump(); e.preventDefault(); }, {passive: false});
         window.addEventListener('mousedown', jump);
     </script>
